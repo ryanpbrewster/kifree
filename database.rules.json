@@ -1,0 +1,31 @@
+{
+  "rules": {
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth !== null && auth.uid === $uid"
+      }
+    },
+    "threads": {
+      "$threadId": {
+				// Users in the thread can read it
+				".read": "data.child('users').hasChild(auth.uid)",
+				// Users in the thread can read it. Additionally, it can be created
+				".write": "!data.exists() || data.child('users').hasChild(auth.uid)",
+				".validate": "newData.hasChildren(['createdAt', 'users', 'title', 'url'])",
+				"createdAt": {
+					".validate": "newData.isNumber()"
+				},
+				"users": {
+					".validate": "newData.hasChildren()"
+				},
+				"title": {
+					".validate": "newData.isString() && newData.val().length > 0"
+				},
+				"url": {
+					".validate": "newData.isString() && newData.val().beginsWith('http')"
+				}
+      }
+    }
+  }
+}
