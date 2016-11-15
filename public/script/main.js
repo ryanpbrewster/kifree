@@ -26,14 +26,22 @@ centerBlock.appendChild(newThreadInput);
 
 function pushNewThread(thread) {
   thread.createdAt = firebase.database.ServerValue.TIMESTAMP;
-  return threadsRef.push(thread);
+  thread.users = {};
+  thread.users[user.uid] = true;
+
+  var newThreadRef = threadsRef.push();
+  var updateData = {};
+  updateData["users/" + user.uid + "/threads/" + newThreadRef.key] = true;
+  updateData["threads/" + newThreadRef.key] = thread;
+  console.log("updating: " + JSON.stringify(updateData));
+  return rootRef.update(updateData);
 }
 
 var googleAuth = new firebase.auth.GoogleAuthProvider();
 var user = null;
 
 function canonicalizeUser() {
-  usersRef.child(user.uid).set({
+  usersRef.child(user.uid).child("profile").set({
     displayName: user.displayName,
     photoUrl: user.photoURL
   });
@@ -48,18 +56,24 @@ logoutButton.onclick = function() {
 };
 
 function viewThreadElement(thread) {
+  console.log("viewing: " + JSON.stringify(thread));
   var threadElement = document.createElement("div");
 
-  var titleElement = document.createElement("h3");
-  titleElement.innerText = thread.title || "untitled";
+  var titleElement = document.createElement("a");
+  titleElement.innerText = thread.title;
+  titleElement.href = thread.url;
   threadElement.appendChild(titleElement);
 
   return threadElement;
 }
 
-threadsRef.on("child_added", function(data) {
-  centerBlock.appendChild(viewThreadElement(data.val()));
-});
+function setUpListeners() {
+  usersRef.child(user.uid + "/threads").on("child_added", function(userThread) {
+    threadsRef.child(userThread.key).once("value", function (thread) {
+      centerBlock.appendChild(viewThreadElement(thread.val()));
+    });
+  });
+}
 
 
 function setUserLoggedIn(loggedIn) {
@@ -74,6 +88,7 @@ firebase.auth().onAuthStateChanged(function (signedInUser) {
   if (user) {
     canonicalizeUser();
     setUserLoggedIn(true);
+    setUpListeners();
   } else {
     setUserLoggedIn(false);
   }
