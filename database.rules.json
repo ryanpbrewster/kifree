@@ -2,18 +2,24 @@
   "rules": {
     "users": {
       "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid",
+        "username": {
+          // Usernames are write-once, don't mess it up
+          // The format is: alphabetic chars only, length 4--12
+          ".validate": "!data.exists() && newData.isString() && newData.val().matches(/[A-Za-z]{4,12}/)"
+        },
         "profile": {
-          // Anyone can read, only the user themself can write
           ".read": true,
-          ".write": "auth !== null && auth.uid === $uid"
+          "name": {
+            ".validate": "newData.isString()"
+          }
         },
         "threads": {
-          // The user themself can read
-          ".read": "auth !== null && auth.uid === $uid",
           "$threadId": {
-            // Anyone can append, and the owner can do anything
-            ".write": "!data.exists() || (auth !== null && auth.uid === $uid)",
-            ".validate": "newData.isString()"
+            // Anyone can add, and the owner can do anything
+            ".write": "!data.exists()",
+            ".validate": "newData.isBoolean()"
           }
         }
       }
@@ -37,6 +43,24 @@
 				"url": {
 					".validate": "newData.isString() && newData.val().beginsWith('http')"
 				}
+      }
+    },
+    "libraries": {
+      "$libraryId": {
+        // All libraries are public right now
+        ".read": true,
+        // Create a fresh library, or be the owner
+        ".write": "auth !== null && (!data.exists() || auth.uid === data.child('owner').val())",
+        ".validate": "newData.hasChildren(['owner', 'profile'])",
+        "owner": {
+          // This field can only be written once, and only to the creator's id
+          ".validate": "!data.exists() && newData.isString() && newData.val() === auth.uid"
+        },
+        "profile": {
+          "name": {
+            ".validate": "newData.isString()"
+          }
+        }
       }
     }
   }
