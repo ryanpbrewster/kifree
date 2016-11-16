@@ -2,13 +2,19 @@
   "rules": {
     "users": {
       "$uid": {
-        ".write": "auth !== null && auth.uid === $uid",
         "profile": {
-          ".read": true
+          // Anyone can read, only the user themself can write
+          ".read": true,
+          ".write": "auth !== null && auth.uid === $uid"
         },
         "threads": {
+          // The user themself can read
           ".read": "auth !== null && auth.uid === $uid",
-          ".validate": "newData.hasChildren()"
+          "$threadId": {
+            // Anyone can append, and the owner can do anything
+            ".write": "!data.exists() || (auth !== null && auth.uid === $uid)",
+            ".validate": "newData.isString()"
+          }
         }
       }
     },
@@ -16,8 +22,8 @@
       "$threadId": {
 				// Users in the thread can read it
 				".read": "data.child('users').hasChild(auth.uid)",
-				// Users in the thread can read it. Additionally, it can be created
-				".write": "!data.exists() || data.child('users').hasChild(auth.uid)",
+				// Anyone can create a thread, but only users in the thread can modify it
+				".write": "!data.exists() || (auth !== null && data.child('users').hasChild(auth.uid))",
 				".validate": "newData.hasChildren(['createdAt', 'users', 'title', 'url'])",
 				"createdAt": {
 					".validate": "newData.isNumber()"
