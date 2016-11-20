@@ -29,8 +29,6 @@ function startAuth() {
             startAuth();
           });
         }
-      }).then(function(data) {
-        console.log("yay! data = ", data);
       });
     } else {
       console.error('The OAuth Token was null');
@@ -77,13 +75,13 @@ function initApp() {
   // Listen for auth state changes.
   firebase.auth().onAuthStateChanged(function(authData) {
     console.log('User state change detected from the Background script of the Chrome Extension:', authData);
-    if (authData) {
-      user = authData;
-    } else {
-      startAuth();
-    }
+    user = authData;
   });
   chrome.browserAction.onClicked.addListener(function(tab) {
+    if (!user) {
+      startAuth();
+      return;
+    }
     pushNewThread({
       title: tab.title,
       url: tab.url
