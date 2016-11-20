@@ -1,9 +1,0 @@
-{
-  "manifest_version": 2,
-  "name": "Kifree",
-  "description": "Better bookmarking",
-  "version": "0.1",
-  "permissions": [
-    "identity"
-  ]
-}

@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "Kifree",
+  "description": "Better bookmarking",
+  "version": "0.1",
+  "icons": {
+    "128": "kifree.png"
+  },
+  "browser_action": {
+    "default_icon": "kifree.png"
+  },
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "identity"
+  ],
+  "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+  "oauth2": {
+    "client_id": "532139440532-b1dcq1taajhi6h7j0f8o43a66fflg7fl.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+  "key": "-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn5ZvM35nb4Sa9+F5bmu4
+QgXqSyWEd+rgWkwJ9uqtc0qAEnH4WMIsMW7cPAoneW0WKlWbHcohHKhTYZOikKAl
+jp2ImFK1A3sWtLnQCUHJH+4rJ/j/1DZCldEzrzXwVmjjlrjUA5AjG8C9AWdQCuEJ
+p/fyfKMzK8hVdDulyHaHQbxKjZgdPS/HoVqvmwkyjwOrhhIG90UOaDE6dqyyrbCl
+ZC5EtbXBBZx7oqNZx3/IMxFTD9VK3+0AVWEcd44CQowRQPMB6+rdjU4QqCtgyQIA
+teBu/9D2/5z/cEgCpyAyfAvvydJsnfknwgkogb7ACMVcbQAia3oWNWq2njVLi9ZP
+9wIDAQAB
+-----END PUBLIC KEY-----
+"
+}
