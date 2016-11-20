@@ -49,7 +49,7 @@ function viewThreadElement(thread) {
 }
 
 function setUpListeners() {
-  usersRef.child(user.uid + "/threads").on("child_added", function(userThread) {
+  usersRef.child(user.uid).child("threads").on("child_added", function(userThread) {
     threadsRef.child(userThread.key).once("value", function (thread) {
       centerBlock.appendChild(viewThreadElement(thread.val()));
     });
